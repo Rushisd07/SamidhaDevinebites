@@ -380,7 +380,7 @@ const TestimonialsSection = () => {
                     {/* User Info */}
                     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                       {/* Optimized lazy-loaded avatar */}
-                      <LazyAvatar
+                      <Avatar
                         src={testimonial.avatar}
                         alt={`${testimonial.name} profile picture`}
                         size={56}

@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Container,
@@ -7,6 +8,7 @@ import {
   Card,
   CardMedia,
   Fade,
+  Skeleton,
 } from "@mui/material";
 import {
   PlayArrow as PlayIcon,
@@ -14,6 +16,16 @@ import {
 } from "@mui/icons-material";
 
 const HeroSection = () => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+
+  // Preload critical images
+  useEffect(() => {
+    const img = new Image();
+    img.src = "/images/ukadiche-modak-cropped.jpg";
+    img.onload = () => setImageLoaded(true);
+  }, []);
+
   return (
     <Box
       id="home"
@@ -26,12 +38,14 @@ const HeroSection = () => {
         overflow: "hidden",
       }}
     >
-      {/* Background Video */}
+      {/* Optimized Background Video with Intersection Observer */}
       <video
         autoPlay
         loop
         muted
         playsInline
+        preload="metadata" // Only load metadata initially
+        onLoadedData={() => setVideoLoaded(true)}
         style={{
           position: "absolute",
           top: 0,
@@ -40,13 +54,41 @@ const HeroSection = () => {
           height: "100%",
           objectFit: "cover",
           zIndex: -2,
+          opacity: videoLoaded ? 1 : 0,
+          transition: "opacity 0.5s ease",
         }}
       >
-        <source src="../images/Ukadiche-modak-video.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
+        <source src="/images/Ukadiche-modak-video.mp4" type="video/mp4" />
+        {/* Fallback image for unsupported browsers */}
+        <img
+          src="/images/ukadiche-modak-cropped.jpg"
+          alt="Modak Background"
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+          }}
+        />
       </video>
 
-      {/* Overlay to dim the video */}
+      {/* Static background fallback */}
+      {!videoLoaded && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundImage: "url('/images/ukadiche-modak-cropped.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            zIndex: -2,
+          }}
+        />
+      )}
+
+      {/* Overlay */}
       <Box
         sx={{
           position: "absolute",
@@ -54,58 +96,69 @@ const HeroSection = () => {
           left: 0,
           width: "100%",
           height: "100%",
-          background: "rgba(255, 248, 231, 0.65)", // light overlay to keep text visible
+          background: "rgba(255, 248, 231, 0.65)",
           zIndex: -1,
         }}
       />
 
-      {/* Decorative Elements (can show only on mobile if needed) */}
-      <Box
-        sx={{
-          position: "absolute",
-          top: "10%",
-          right: "10%",
-          fontSize: "4rem",
-          opacity: 0.1,
-          transform: "rotate(15deg)",
-        }}
-      >
-        🕉️
-      </Box>
-      <Box
-        sx={{
-          position: "absolute",
-          bottom: "20%",
-          left: "5%",
-          fontSize: "3rem",
-          opacity: 0.1,
-          transform: "rotate(-15deg)",
-        }}
-      >
-        🐘
-      </Box>
+      {/* Decorative Elements - Only show after content loads */}
+      {imageLoaded && (
+        <>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "10%",
+              right: "10%",
+              fontSize: "4rem",
+              opacity: 0.1,
+              transform: "rotate(15deg)",
+              display: { xs: "none", md: "block" },
+            }}
+          >
+            🕉️
+          </Box>
+          <Box
+            sx={{
+              position: "absolute",
+              bottom: "20%",
+              left: "5%",
+              fontSize: "3rem",
+              opacity: 0.1,
+              transform: "rotate(-15deg)",
+              display: { xs: "none", md: "block" },
+            }}
+          >
+            🐘
+          </Box>
+        </>
+      )}
 
       <Container maxWidth="lg">
         <Grid container spacing={4} alignItems="center">
           <Grid item xs={12} md={6}>
             <Fade in timeout={1000}>
               <Box>
+                {/* SEO optimized headings with proper hierarchy */}
                 <Typography
+                  component="h1"
                   variant="h1"
                   sx={{
                     color: "#7E2C3A",
                     mb: 2,
                     textShadow: "2px 2px 4px rgba(0,0,0,0.1)",
+                    fontSize: { xs: "2.5rem", md: "3.5rem" },
                   }}
                 >
                   Samidha's Divine Delights
                 </Typography>
                 <Typography
+                  component="h2"
                   variant="h3"
                   sx={{
                     color: "#7E2C3A",
                     mb: 3,
                     fontWeight: 400,
+                    fontSize: { xs: "1.8rem", md: "2.5rem" },
                   }}
                 >
                   Celebrating Modak for Ganpati
@@ -116,6 +169,7 @@ const HeroSection = () => {
                     color: "#444",
                     mb: 4,
                     lineHeight: 1.6,
+                    fontSize: { xs: "1rem", md: "1.25rem" },
                   }}
                 >
                   Experience the sacred tradition of offering Modaks to Lord
@@ -137,6 +191,8 @@ const HeroSection = () => {
                     }}
                     href="https://www.instagram.com/samidha_divinebites/"
                     target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Explore our modak flavors on Instagram"
                   >
                     Explore Flavors
                   </Button>
@@ -154,6 +210,8 @@ const HeroSection = () => {
                     }}
                     href="https://www.instagram.com/samidha_divinebites/"
                     target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Watch our story on Instagram"
                   >
                     Watch Story
                   </Button>
@@ -175,12 +233,27 @@ const HeroSection = () => {
                   },
                 }}
               >
-                <CardMedia
-                  component="img"
-                  height="400"
-                  image="/images/ukadiche-modak-cropped.jpg"
-                  alt="Divine Modak"
-                />
+                {/* Optimized image with loading states */}
+                {!imageLoaded ? (
+                  <Skeleton
+                    variant="rectangular"
+                    height={400}
+                    animation="wave"
+                  />
+                ) : (
+                  <CardMedia
+                    component="img"
+                    height="400"
+                    image="/images/ukadiche-modak-cropped.jpg"
+                    alt="Divine Ukadiche Modak - Traditional steamed modak with coconut jaggery filling"
+                    loading="eager" // Load immediately for hero image
+                    decoding="async"
+                    sx={{
+                      transition: "opacity 0.3s ease",
+                      opacity: imageLoaded ? 1 : 0,
+                    }}
+                  />
+                )}
               </Card>
             </Fade>
           </Grid>

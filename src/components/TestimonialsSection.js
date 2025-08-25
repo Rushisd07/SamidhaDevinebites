@@ -1,3 +1,4 @@
+import React, { useState, useRef, useCallback } from "react";
 import {
   Box,
   Container,
@@ -8,60 +9,205 @@ import {
   Avatar,
   Rating,
   Fade,
+  Skeleton,
 } from "@mui/material";
 import { FormatQuote as QuoteIcon } from "@mui/icons-material";
+
+// Optimized Avatar Component with lazy loading
+const LazyAvatar = ({ src, alt, size = 56 }) => {
+  const [loaded, setLoaded] = useState(false);
+  const [inView, setInView] = useState(false);
+  const avatarRef = useRef();
+
+  const setRef = useCallback((node) => {
+    avatarRef.current = node;
+
+    if (node) {
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            setInView(true);
+            observer.unobserve(node);
+          }
+        },
+        {
+          rootMargin: "100px",
+          threshold: 0.1,
+        }
+      );
+
+      observer.observe(node);
+      return () => observer.unobserve(node);
+    }
+  }, []);
+
+  return (
+    <Box ref={setRef}>
+      {!loaded && inView ? (
+        <Skeleton variant="circular" width={size} height={size} />
+      ) : (
+        <Avatar
+          src={inView ? src : undefined}
+          alt={alt}
+          sx={{ width: size, height: size }}
+          onLoad={() => setLoaded(true)}
+        >
+          {!inView && alt.charAt(0)}
+        </Avatar>
+      )}
+    </Box>
+  );
+};
 
 const TestimonialsSection = () => {
   const testimonials = [
     {
-      name: "Ashwini gophan",
+      id: 1,
+      name: "Ashwini Gophan",
       location: "Pune, Maharashtra",
       rating: 5,
       text: "The joy of offering these divine modaks to Ganpati Bappa made our celebration truly magical. The taste and quality exceeded all expectations!",
-      avatar: "./reviews/Ashwini.jpg",
+      avatar: "/reviews/Ashwini.jpg",
       festival: "Ganesh Chaturthi 2024",
+      schema: {
+        "@type": "Review",
+        reviewRating: {
+          "@type": "Rating",
+          ratingValue: "5",
+          bestRating: "5",
+        },
+        author: {
+          "@type": "Person",
+          name: "Ashwini Gophan",
+        },
+        reviewBody:
+          "The joy of offering these divine modaks to Ganpati Bappa made our celebration truly magical. The taste and quality exceeded all expectations!",
+      },
     },
     {
+      id: 2,
       name: "Gaurav Badgujar",
       location: "Pune, Maharashtra",
       rating: 5,
       text: "Every bite of these modaks reminded me of my grandmother's recipes. The traditional flavors combined with premium ingredients create pure bliss.",
-      avatar: "./reviews/Gaurav.jpg",
+      avatar: "/reviews/Gaurav.jpg",
       festival: "Sankashti Chaturthi",
+      schema: {
+        "@type": "Review",
+        reviewRating: {
+          "@type": "Rating",
+          ratingValue: "5",
+          bestRating: "5",
+        },
+        author: {
+          "@type": "Person",
+          name: "Gaurav Badgujar",
+        },
+        reviewBody:
+          "Every bite of these modaks reminded me of my grandmother's recipes. The traditional flavors combined with premium ingredients create pure bliss.",
+      },
     },
     {
+      id: 3,
       name: "Rushi Dudhane",
       location: "Kolhapur, Maharashtra",
       rating: 5,
       text: "The modak tradition became even more special with these beautifully crafted sweets. Our entire family was blessed with joy and prosperity.",
-      avatar: "./reviews/Rushya.jpg",
+      avatar: "/reviews/Rushya.jpg",
       festival: "Ganesh Chaturthi 2024",
+      schema: {
+        "@type": "Review",
+        reviewRating: {
+          "@type": "Rating",
+          ratingValue: "5",
+          bestRating: "5",
+        },
+        author: {
+          "@type": "Person",
+          name: "Rushi Dudhane",
+        },
+        reviewBody:
+          "The modak tradition became even more special with these beautifully crafted sweets. Our entire family was blessed with joy and prosperity.",
+      },
     },
     {
+      id: 4,
       name: "Abhishek Sananse",
       location: "Pune, Maharashtra",
       rating: 5,
       text: "The packaging, presentation, and most importantly the taste - everything was perfect. These modaks truly carry the essence of devotion.",
-      avatar: "./reviews/Abhi.jpg",
+      avatar: "/reviews/Abhi.jpg",
       festival: "Maghi Ganesh Jayanti",
+      schema: {
+        "@type": "Review",
+        reviewRating: {
+          "@type": "Rating",
+          ratingValue: "5",
+          bestRating: "5",
+        },
+        author: {
+          "@type": "Person",
+          name: "Abhishek Sananse",
+        },
+        reviewBody:
+          "The packaging, presentation, and most importantly the taste - everything was perfect. These modaks truly carry the essence of devotion.",
+      },
     },
     {
+      id: 5,
       name: "Namrata Jagtap",
       location: "Pune, Maharashtra",
       rating: 5,
       text: "These modaks brought back the festive charm of my childhood. Soft texture, authentic taste, and pure devotion in every bite.",
-      avatar: "./reviews/Namrata.jpg",
+      avatar: "/reviews/Namrata.jpg",
       festival: "Ganesh Chaturthi 2024",
+      schema: {
+        "@type": "Review",
+        reviewRating: {
+          "@type": "Rating",
+          ratingValue: "5",
+          bestRating: "5",
+        },
+        author: {
+          "@type": "Person",
+          name: "Namrata Jagtap",
+        },
+        reviewBody:
+          "These modaks brought back the festive charm of my childhood. Soft texture, authentic taste, and pure devotion in every bite.",
+      },
     },
     {
+      id: 6,
       name: "Aishwarya Kulkarni",
       location: "Pune, Maharashtra",
       rating: 5,
       text: "I loved how fresh and perfectly balanced these modaks were. They made our family celebration more joyful and memorable.",
-      avatar: "./reviews/Aishwarya.jpg",
+      avatar: "/reviews/Aishwarya.jpg",
       festival: "Sankashti Chaturthi",
+      schema: {
+        "@type": "Review",
+        reviewRating: {
+          "@type": "Rating",
+          ratingValue: "5",
+          bestRating: "5",
+        },
+        author: {
+          "@type": "Person",
+          name: "Aishwarya Kulkarni",
+        },
+        reviewBody:
+          "I loved how fresh and perfectly balanced these modaks were. They made our family celebration more joyful and memorable.",
+      },
     },
   ];
+
+  // Preload avatar images
+  React.useEffect(() => {
+    testimonials.forEach((testimonial) => {
+      const img = new Image();
+      img.src = testimonial.avatar;
+    });
+  }, [testimonials]);
 
   return (
     <Box
@@ -73,7 +219,28 @@ const TestimonialsSection = () => {
         position: "relative",
       }}
     >
-      {/* Decorative Quote Icons */}
+      {/* Schema.org structured data for reviews */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            name: "Samidha Divinebites",
+            description:
+              "Traditional modak makers specializing in Ganesh Chaturthi sweets",
+            aggregateRating: {
+              "@type": "AggregateRating",
+              ratingValue: "4.9",
+              reviewCount: "200",
+              bestRating: "5",
+            },
+            review: testimonials.map((testimonial) => testimonial.schema),
+          }),
+        }}
+      />
+
+      {/* Optimized decorative elements */}
       <QuoteIcon
         sx={{
           position: "absolute",
@@ -83,6 +250,7 @@ const TestimonialsSection = () => {
           color: "#F4C842",
           opacity: 0.1,
           transform: "rotate(-15deg)",
+          display: { xs: "none", md: "block" },
         }}
       />
       <QuoteIcon
@@ -94,6 +262,7 @@ const TestimonialsSection = () => {
           color: "#7E2C3A",
           opacity: 0.1,
           transform: "rotate(15deg) scaleX(-1)",
+          display: { xs: "none", md: "block" },
         }}
       />
 
@@ -101,6 +270,7 @@ const TestimonialsSection = () => {
         <Fade in timeout={1000}>
           <Box textAlign="center" mb={6}>
             <Typography
+              component="h2"
               variant="h2"
               sx={{
                 color: "#7E2C3A",
@@ -130,7 +300,12 @@ const TestimonialsSection = () => {
                 gap: 1,
               }}
             >
-              <Rating value={5} readOnly sx={{ color: "#F4C842" }} />
+              <Rating
+                value={5}
+                readOnly
+                sx={{ color: "#F4C842" }}
+                aria-label="Average rating: 4.9 out of 5 stars"
+              />
               <Typography
                 variant="body1"
                 sx={{ color: "#666", fontWeight: 600 }}
@@ -143,7 +318,7 @@ const TestimonialsSection = () => {
 
         <Grid container spacing={4}>
           {testimonials.map((testimonial, index) => (
-            <Grid item xs={12} md={6} lg={4} key={index}>
+            <Grid item xs={12} md={6} lg={4} key={testimonial.id}>
               <Fade in timeout={1000 + index * 150}>
                 <Card
                   sx={{
@@ -161,6 +336,8 @@ const TestimonialsSection = () => {
                       borderColor: "rgba(244, 200, 66, 0.4)",
                     },
                   }}
+                  role="article"
+                  aria-label={`Review by ${testimonial.name}`}
                 >
                   {/* Quote Icon */}
                   <QuoteIcon
@@ -172,6 +349,7 @@ const TestimonialsSection = () => {
                       opacity: 0.3,
                       fontSize: "2rem",
                     }}
+                    aria-hidden="true"
                   />
 
                   <CardContent sx={{ p: 0 }}>
@@ -180,6 +358,7 @@ const TestimonialsSection = () => {
                       value={testimonial.rating}
                       readOnly
                       sx={{ color: "#F4C842", mb: 2 }}
+                      aria-label={`${testimonial.rating} star rating`}
                     />
 
                     {/* Testimonial Text */}
@@ -193,16 +372,18 @@ const TestimonialsSection = () => {
                         position: "relative",
                         zIndex: 1,
                       }}
+                      component="blockquote"
                     >
                       "{testimonial.text}"
                     </Typography>
 
                     {/* User Info */}
                     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                      <Avatar
+                      {/* Optimized lazy-loaded avatar */}
+                      <LazyAvatar
                         src={testimonial.avatar}
-                        alt={testimonial.name}
-                        sx={{ width: 56, height: 56 }}
+                        alt={`${testimonial.name} profile picture`}
+                        size={56}
                       />
                       <Box>
                         <Typography
@@ -212,6 +393,7 @@ const TestimonialsSection = () => {
                             fontWeight: 600,
                             mb: 0.5,
                           }}
+                          component="cite"
                         >
                           {testimonial.name}
                         </Typography>
@@ -257,8 +439,14 @@ const TestimonialsSection = () => {
               textAlign: "center",
               color: "white",
             }}
+            role="complementary"
+            aria-label="Community statistics"
           >
-            <Typography variant="h4" sx={{ mb: 2, fontWeight: 600 }}>
+            <Typography
+              variant="h4"
+              sx={{ mb: 2, fontWeight: 600 }}
+              component="h3"
+            >
               Join Our Blessed Community
             </Typography>
             <Typography variant="h6" sx={{ opacity: 0.9, mb: 3 }}>
@@ -277,6 +465,7 @@ const TestimonialsSection = () => {
                 <Typography
                   variant="h3"
                   sx={{ fontWeight: 700, color: "#F4C842" }}
+                  aria-label="200 plus happy devotees"
                 >
                   200+
                 </Typography>
@@ -286,6 +475,7 @@ const TestimonialsSection = () => {
                 <Typography
                   variant="h3"
                   sx={{ fontWeight: 700, color: "#F4C842" }}
+                  aria-label="5000 plus modaks blessed"
                 >
                   5000+
                 </Typography>
@@ -295,6 +485,7 @@ const TestimonialsSection = () => {
                 <Typography
                   variant="h3"
                   sx={{ fontWeight: 700, color: "#F4C842" }}
+                  aria-label="10 plus cities served"
                 >
                   10+
                 </Typography>
